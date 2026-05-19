@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luka Photography</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  :root{--black:#080808;--white:#f5f2ee;--gold:#b8a170;--gold-light:#d4bc8e;--gray:#1a1a1a;--muted:#666;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;font-weight:300;overflow-x:hidden;cursor:none;}
+  .cursor{width:8px;height:8px;background:var(--gold);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform 0.1s ease;}
+  .cursor-ring{width:36px;height:36px;border:1px solid rgba(184,161,112,0.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);}
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.8rem 4rem;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(8,8,8,0.95) 0%,transparent 100%);}
+  .nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;letter-spacing:0.05em;color:var(--gold-light);text-decoration:none;}
+  .nav-logo em{font-style:italic;font-size:1.1em;}
+  .nav-links{display:flex;gap:3rem;list-style:none;}
+  .nav-links a{color:var(--white);text-decoration:none;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.6;transition:opacity 0.3s,color 0.3s;position:relative;}
+  .nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--gold);transition:width 0.3s ease;}
+  .nav-links a:hover{opacity:1;color:var(--gold-light);}
+  .nav-links a:hover::after{width:100%;}
+  .hero{height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+  .hero-bg-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:3px;opacity:0.12;}
+  .hero-bg-cell{background:var(--gray);overflow:hidden;background-size:cover;background-position:center;}
+  .hero-overlay{position:absolute;inset:0;background:rgba(8,8,8,0.65);}
+  .hero-content{position:relative;z-index:2;text-align:center;}
+  .hero-eyebrow{font-size:10px;letter-spacing:0.4em;text-transform:uppercase;color:var(--gold);margin-bottom:2rem;opacity:0;animation:fadeUp 1s ease 0.3s forwards;}
+  .hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(4rem,10vw,9rem);font-weight:300;line-height:0.9;opacity:0;animation:fadeUp 1s ease 0.5s forwards;}
+  .hero-title em{font-style:italic;color:var(--gold-light);}
+  .hero-sub{margin-top:2rem;font-size:11px;letter-spacing:0.2em;color:var(--muted);text-transform:uppercase;opacity:0;animation:fadeUp 1s ease 0.8s forwards;}
+  .hero-scroll{position:absolute;bottom:3rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:0.5rem;opacity:0;animation:fadeUp 1s ease 1.2s forwards;}
+  .hero-scroll span{font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--muted);}
+  .scroll-line{width:1px;height:50px;background:linear-gradient(to bottom,var(--gold),transparent);animation:pulse 2s ease infinite;}
+  @keyframes pulse{0%,100%{opacity:0.3;}50%{opacity:1;}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+  .categories{padding:8rem 4rem;background:#0d0d0d;}
+  .section-label{font-size:9px;letter-spacing:0.4em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
+  .section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:300;line-height:1;margin-bottom:1.5rem;}
+  .divider{width:60px;height:1px;background:var(--gold);opacity:0.4;margin-bottom:3rem;}
+  .categories-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+  .category-card{position:relative;overflow:hidden;cursor:none;background:var(--gray);}
+  .cat-cover{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;transition:transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94),filter 0.8s;filter:grayscale(15%) brightness(0.8);}
+  .category-card:hover .cat-cover{transform:scale(1.06);filter:grayscale(0%) brightness(0.85);}
+  .cat-empty{width:100%;aspect-ratio:3/4;background:var(--gray);display:flex;align-items:center;justify-content:center;}
+  .cat-empty span{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:#333;}
+  .cat-info{position:absolute;bottom:0;left:0;right:0;padding:2rem;background:linear-gradient(to top,rgba(8,8,8,0.9) 0%,transparent 100%);}
+  .cat-number{font-size:9px;letter-spacing:0.3em;color:var(--gold);margin-bottom:0.3rem;}
+  .cat-name{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;line-height:1;}
+  .cat-count{font-size:10px;color:var(--muted);margin-top:0.3rem;}
+  .cat-arrow{position:absolute;top:1.5rem;right:1.5rem;width:36px;height:36px;border:1px solid rgba(184,161,112,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(0.8);transition:all 0.3s;}
+  .category-card:hover .cat-arrow{opacity:1;transform:scale(1);}
+  .cat-arrow svg{width:14px;height:14px;stroke:var(--gold);fill:none;}
+  .cat-modal{position:fixed;inset:0;background:rgba(8,8,8,0.98);z-index:500;display:none;flex-direction:column;overflow-y:auto;}
+  .cat-modal.open{display:flex;}
+  .cat-modal-header{position:sticky;top:0;background:rgba(8,8,8,0.95);padding:2rem 4rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(184,161,112,0.1);z-index:10;}
+  .cat-modal-title{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;}
+  .cat-modal-close{background:none;border:1px solid rgba(184,161,112,0.3);color:var(--gold);font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;padding:0.6rem 1.2rem;cursor:pointer;transition:all 0.3s;}
+  .cat-modal-close:hover{border-color:var(--gold);}
+  .cat-modal-gallery{padding:3rem 4rem;columns:3;column-gap:6px;}
+  .cat-modal-item{break-inside:avoid;margin-bottom:6px;overflow:hidden;cursor:pointer;}
+  .cat-modal-item img{width:100%;display:block;transition:transform 0.5s ease,filter 0.5s;filter:grayscale(10%);}
+  .cat-modal-item:hover img{transform:scale(1.03);filter:grayscale(0%);}
+  .lightbox{position:fixed;inset:0;background:rgba(8,8,8,0.97);z-index:1000;display:none;align-items:center;justify-content:center;flex-direction:column;}
+  .lightbox.open{display:flex;}
+  .lightbox-img{max-width:85vw;max-height:80vh;object-fit:contain;}
+  .lightbox-close{position:absolute;top:2rem;right:2rem;background:none;border:none;color:var(--white);font-size:2rem;cursor:pointer;opacity:0.6;transition:opacity 0.3s;font-family:'Montserrat',sans-serif;font-weight:200;}
+  .lightbox-close:hover{opacity:1;}
+  .lightbox-nav{display:flex;gap:2rem;margin-top:1.5rem;align-items:center;}
+  .lightbox-nav button{background:none;border:1px solid rgba(184,161,112,0.3);color:var(--gold);font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;padding:0.6rem 1.2rem;cursor:pointer;transition:all 0.3s;}
+  .lightbox-nav button:hover{border-color:var(--gold);background:rgba(184,161,112,0.08);}
+  .lightbox-counter{font-size:10px;letter-spacing:0.2em;color:var(--muted);}
+  .about{padding:8rem 4rem;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center;background:var(--black);}
+  .about-img-wrap{position:relative;}
+  .about-img-wrap::before{content:'';position:absolute;top:-20px;left:-20px;right:20px;bottom:20px;border:1px solid rgba(184,161,112,0.1);}
+  .about-img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;filter:grayscale(15%);}
+  .about-text p{font-size:13px;line-height:1.9;color:rgba(245,242,238,0.6);margin-bottom:1.5rem;}
+  .about-text p:first-of-type{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-style:italic;color:var(--white);line-height:1.7;}
+  .about-sig{margin-top:3rem;display:flex;align-items:center;gap:1.5rem;}
+  .about-sig-line{width:40px;height:1px;background:var(--gold);opacity:0.5;}
+  .about-sig-text{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);}
+  .contact{padding:8rem 4rem;background:#0a0a0a;text-align:center;}
+  .contact-inner{max-width:580px;margin:0 auto;}
+  .contact-intro{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:rgba(245,242,238,0.45);margin-bottom:4rem;line-height:1.8;}
+  .contact-form{display:flex;flex-direction:column;gap:1.5rem;text-align:left;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+  .form-field{display:flex;flex-direction:column;gap:0.5rem;}
+  .form-field label{font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);}
+  .form-field input,.form-field textarea{background:transparent;border:none;border-bottom:1px solid rgba(184,161,112,0.2);color:var(--white);padding:0.75rem 0;font-family:'Montserrat',sans-serif;font-weight:300;font-size:13px;outline:none;transition:border-color 0.3s;resize:none;}
+  .form-field input:focus,.form-field textarea:focus{border-bottom-color:var(--gold);}
+  .form-field input::placeholder,.form-field textarea::placeholder{color:rgba(245,242,238,0.2);}
+  .btn-submit{align-self:center;margin-top:1rem;background:transparent;border:1px solid rgba(184,161,112,0.35);color:var(--gold-light);padding:1rem 3rem;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:300;letter-spacing:0.3em;text-transform:uppercase;cursor:pointer;transition:all 0.3s;}
+  .btn-submit:hover{border-color:var(--gold);color:var(--white);background:rgba(184,161,112,0.06);}
+  footer{padding:2rem 4rem;border-top:1px solid rgba(184,161,112,0.07);display:flex;justify-content:space-between;align-items:center;}
+  footer p{font-size:10px;letter-spacing:0.1em;color:var(--muted);}
+  .footer-links{display:flex;gap:2rem;}
+  .footer-links a{font-size:10px;letter-spacing:0.15em;color:var(--muted);text-decoration:none;text-transform:uppercase;transition:color 0.3s;}
+  .footer-links a:hover{color:var(--gold);}
+  .reveal{opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease;}
+  .reveal.visible{opacity:1;transform:translateY(0);}
+  .no-photos{text-align:center;padding:4rem;color:#333;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a class="nav-logo" href="#">Luka <em>Photography</em></a>
+  <ul class="nav-links">
+    <li><a href="#categories">Categories</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero" id="home">
+  <div class="hero-bg-grid">
+    <div class="hero-bg-cell" id="hc0"></div>
+    <div class="hero-bg-cell" id="hc1"></div>
+    <div class="hero-bg-cell" id="hc2"></div>
+    <div class="hero-bg-cell" id="hc3"></div>
+    <div class="hero-bg-cell" id="hc4"></div>
+    <div class="hero-bg-cell" id="hc5"></div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Photography by Luka Božič</p>
+    <h1 class="hero-title">Capturing<br><em>moments</em><br>that matter</h1>
+    <p class="hero-sub">Slovenia &nbsp;·&nbsp; Portraits · Street · Cars · Landscape · Events</p>
+  </div>
+  <div class="hero-scroll"><span>Scroll</span><div class="scroll-line"></div></div>
+</section>
+
+<section class="categories" id="categories">
+  <div class="reveal">
+    <p class="section-label">Browse By Category</p>
+    <h2 class="section-title">The Work</h2>
+    <div class="divider"></div>
+  </div>
+  <div class="categories-grid" id="catGrid"></div>
+</section>
+
+<section class="about" id="about">
+  <div class="about-img-wrap reveal">
+    <img class="about-img" src="photos/ME/about.jpg" alt="Luka Božič" onerror="this.style.background='#1a1a1a';this.style.minHeight='500px';">
+  </div>
+  <div class="about-text reveal">
+    <p class="section-label">About</p>
+    <h2 class="section-title" style="margin-bottom:2rem;">Luka Božič</h2>
+    <div class="divider"></div>
+    <p>I'm a photographer from Slovenia with a strong passion for capturing real moments and turning them into visually engaging stories. My work blends natural light, atmosphere, and composition to create images that feel both authentic and cinematic.</p>
+    <p>I'm drawn to photography that has emotion and depth — whether during live events, concerts, portraits, or everyday scenes that carry a quiet story. I observe before I shoot, looking for small details, expressions, and moments that often go unnoticed but say the most.</p>
+    <p>Over time, photography has become more than a creative hobby — it's a way of seeing and understanding the world. My goal is simple: to create images that make people feel something and remember the moment exactly as it was.</p>
+    <div class="about-sig"><div class="about-sig-line"></div><span class="about-sig-text">Based in Slovenia</span></div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="contact-inner">
+    <p class="section-label reveal">Get in Touch</p>
+    <h2 class="section-title reveal">Let's Create<br><em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold-light);">Something Together</em></h2>
+    <div class="divider reveal" style="margin:2rem auto 3rem;"></div>
+    <p class="contact-intro reveal">Whether you have a project in mind, want to book a session, or simply want to say hello — I'd love to hear from you.</p>
+    <form class="contact-form reveal" name="contact" method="POST" data-netlify="true">
+      <input type="hidden" name="form-name" value="contact">
+      <div class="form-row">
+        <div class="form-field"><label>Name</label><input type="text" name="name" placeholder="Your name" required></div>
+        <div class="form-field"><label>Email</label><input type="email" name="email" placeholder="your@email.com" required></div>
+      </div>
+      <div class="form-field"><label>Subject</label><input type="text" name="subject" placeholder="What's this about?"></div>
+      <div class="form-field"><label>Message</label><textarea rows="5" name="message" placeholder="Tell me about your project..." required></textarea></div>
+      <button class="btn-submit" type="submit">Send Message</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Luka Photography. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="#">Instagram</a>
+    <a href="#">Facebook</a>
+    <a href="#contact">Contact</a>
+  </div>
+</footer>
+
+<div class="cat-modal" id="catModal">
+  <div class="cat-modal-header">
+    <div>
+      <p class="section-label" id="modalLabel"></p>
+      <h2 class="cat-modal-title" id="modalTitle"></h2>
+    </div>
+    <button class="cat-modal-close" onclick="closeModal()">✕ Close</button>
+  </div>
+  <div class="cat-modal-gallery" id="modalGallery"></div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="">
+  <div class="lightbox-nav">
+    <button onclick="lightboxNav(-1)">← Prev</button>
+    <span class="lightbox-counter" id="lightboxCounter"></span>
+    <button onclick="lightboxNav(1)">Next →</button>
+  </div>
+</div>
+
+<script>
+const categories = [
+  { id:'Portret',   name:'Portraits', sub:'Faces & Stories', num:'01', folder:'photos/Portret' },
+  { id:'car',       name:'Cars',      sub:'Automotive',      num:'02', folder:'photos/car' },
+  { id:'lendscape', name:'Landscape', sub:'Nature & Places', num:'03', folder:'photos/lendscape' },
+  { id:'street',    name:'Street',    sub:'Urban Life',      num:'04', folder:'photos/street' },
+  { id:'Koncert',   name:'Events',    sub:'Concerts & More', num:'05', folder:'photos/Koncert' }
+];
+
+// Photo manifest — this file is auto-generated when you add photos via admin
+// Format: { "Portret": ["photo1.jpg","photo2.jpg"], "car": [...], ... }
+let manifest = {};
+
+async function loadManifest() {
+  try {
+    const r = await fetch('photos/manifest.json');
+    if (r.ok) manifest = await r.json();
+  } catch(e) { manifest = {}; }
+  buildGrid();
+  updateHeroBg();
+}
+
+function getPhotos(catId) {
+  return (manifest[catId] || []).map(f => `photos/${catId}/${f}`);
+}
+
+function buildGrid() {
+  const grid = document.getElementById('catGrid');
+  grid.innerHTML = '';
+  categories.forEach(cat => {
+    const imgs = getPhotos(cat.id);
+    const cover = imgs[0] || null;
+    const card = document.createElement('div');
+    card.className = 'category-card reveal';
+    card.innerHTML = `
+      ${cover
+        ? `<img class="cat-cover" src="${cover}" alt="${cat.name}" loading="lazy">`
+        : `<div class="cat-empty"><span>${cat.name}</span></div>`}
+      <div class="cat-info">
+        <p class="cat-number">${cat.num}</p>
+        <h3 class="cat-name">${cat.name}</h3>
+        <p class="cat-count">${imgs.length} photo${imgs.length!==1?'s':''}</p>
+      </div>
+      <div class="cat-arrow"><svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>`;
+    card.addEventListener('click', () => openModal(cat));
+    grid.appendChild(card);
+  });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+
+function updateHeroBg() {
+  const all = categories.flatMap(c => getPhotos(c.id));
+  for(let i=0;i<6;i++){
+    const c = document.getElementById(`hc${i}`);
+    if(all[i]){ c.style.backgroundImage=`url(${all[i]})`; c.style.backgroundSize='cover'; c.style.backgroundPosition='center'; }
+  }
+}
+
+let lbPhotos=[], lbIndex=0;
+
+function openModal(cat) {
+  const imgs = getPhotos(cat.id);
+  document.getElementById('modalLabel').textContent = `Category ${cat.num}`;
+  document.getElementById('modalTitle').textContent = cat.name;
+  const g = document.getElementById('modalGallery');
+  g.innerHTML = '';
+  if(!imgs.length){ g.innerHTML='<div class="no-photos">No photos yet</div>'; }
+  else {
+    imgs.forEach((src,i) => {
+      const item = document.createElement('div');
+      item.className = 'cat-modal-item';
+      item.innerHTML = `<img src="${src}" alt="Photo ${i+1}" loading="lazy">`;
+      item.onclick = () => openLightbox(imgs, i);
+      g.appendChild(item);
+    });
+  }
+  document.getElementById('catModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(){ document.getElementById('catModal').classList.remove('open'); document.body.style.overflow=''; }
+function openLightbox(imgs,idx){ lbPhotos=imgs;lbIndex=idx;document.getElementById('lightbox').classList.add('open');updateLightbox(); }
+function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); }
+function lightboxNav(d){ lbIndex=(lbIndex+d+lbPhotos.length)%lbPhotos.length;updateLightbox(); }
+function updateLightbox(){ document.getElementById('lightboxImg').src=lbPhotos[lbIndex];document.getElementById('lightboxCounter').textContent=`${lbIndex+1} / ${lbPhotos.length}`; }
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeLightbox();closeModal();}
+  if(e.key==='ArrowRight') lightboxNav(1);
+  if(e.key==='ArrowLeft') lightboxNav(-1);
+});
+
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
+(function loop(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);})();
+document.querySelectorAll('a,button,.category-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.transform='translate(-50%,-50%) scale(2.5)';ring.style.borderColor='rgba(184,161,112,0.8)';});
+  el.addEventListener('mouseleave',()=>{cursor.style.transform='translate(-50%,-50%) scale(1)';ring.style.borderColor='rgba(184,161,112,0.5)';});
+});
+
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('visible'),i*80);});
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+loadManifest();
+</script>
+</body>
+</html>
